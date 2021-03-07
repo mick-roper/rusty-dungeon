@@ -7,10 +7,10 @@ pub struct Position {
     pub y: i32,
 }
 
-#[derive(Component, Copy, Clone)]
+#[derive(Component, Clone)]
 pub struct Drawable {
     pub width: u32,
     pub height: u32,
-    pub texture_id: u32,
+    pub texture_id: String,
     pub z_index: u32,
 }
