@@ -12,7 +12,8 @@ impl State {
         let mut world = World::empty();
 
         world.register::<Position>();
-        world.register::<Drawable>();
+        world.register::<StaticDrawable>();
+        world.register::<AnimatedDrawable>();
 
         State{world}
     }

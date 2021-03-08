@@ -1,19 +1,17 @@
+use std::collections::HashMap;
 use sdl2::rect::Rect;
-use sdl2::render::{Texture, TextureCreator};
-use sdl2::video::WindowContext;
+use sdl2::render::{Texture, Canvas};
 use specs::prelude::*;
 
 use super::game::State;
 use super::components::*;
-use super::resource_management::*;
 
-type TextureManager<'l, T> = ResourceManager<'l, String, Texture<'l>, TextureCreator<T>>;
+const TEXTURE_ID: String = String::from("resources/0x72_DungeonTilesetII_v1.3.png");
 
 pub struct Renderer {
     context: sdl2::Sdl,
-    canvas: sdl2::render::Canvas<sdl2::video::Window>,
-    texture_creator: TextureCreator<WindowContext>,
-    // texture_manager: TextureManager<'l, WindowContext>,
+    canvas: Canvas<sdl2::video::Window>,
+    texture_map: HashMap<String, Texture<'static>>,
 }
 
 impl Renderer {
@@ -26,7 +24,7 @@ impl Renderer {
             .build()
             .map_err(|e| e.to_string())?;
 
-        let mut canvas = window
+        let mut canvas: Canvas<sdl2::video::Window> = window
             .into_canvas()
             .target_texture()
             .present_vsync()
@@ -34,12 +32,13 @@ impl Renderer {
             .map_err(|e| e.to_string())?;
 
         let texture_creator = canvas.texture_creator();
+        let texture_map = HashMap::new();
 
         canvas.set_draw_color(sdl2::pixels::Color::RGB(0, 0, 0));
         canvas.clear();
         canvas.present();
 
-        Ok(Renderer{context, canvas, texture_creator})
+        Ok(Renderer{context, canvas, texture_map})
     }
 
     pub fn event_pump(&mut self) -> Result<sdl2::EventPump, String> {
@@ -59,9 +58,9 @@ impl Renderer {
             r2.set_y(pos.y);
             r2.set_width(drawable.width);
             r2.set_height(drawable.height);
-            let t = self.texture_creator.load("abc.png")?;
+            let t = &self.texture_map[&TEXTURE_ID];
             
-            self.canvas.copy(&t, r1, r2)?;
+            self.canvas.copy(t, r1, r2)?;
         }
 
         self.canvas.present();
