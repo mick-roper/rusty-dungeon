@@ -23,7 +23,7 @@ impl State {
     }
 
     pub fn update(&mut self) -> Result<(), String> {
-        println!("updating the game state...");
+        // println!("updating the game state...");
         Ok(())
     }
 }
