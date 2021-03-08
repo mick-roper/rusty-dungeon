@@ -4,13 +4,17 @@ mod texture_map;
 mod game;
 mod components;
 
-use sdl2::event::Event;
 use sdl2::image::{InitFlag, LoadTexture};
+use sdl2::pixels::Color;
 use sdl2::rect::Rect;
+use sdl2::event::Event;
 use std::time::Duration;
 
 use game::State;
 use texture_map::*;
+
+const WIDTH: u32 = 800;
+const HEIGHT: u32 = 600;
 
 fn main() -> Result<(), String> {
     let d = Duration::new(0, 1_000_000_000u32 / 30);
@@ -18,7 +22,7 @@ fn main() -> Result<(), String> {
     let video_subsystem = sdl_context.video()?;
     let _image_context = sdl2::image::init(InitFlag::PNG)?;
     let window = video_subsystem
-        .window("rusty dungeon", 800, 600)
+        .window("rusty dungeon", WIDTH, HEIGHT)
         .position_centered()
         .build()
         .map_err(|e| e.to_string())?;
@@ -33,6 +37,7 @@ fn main() -> Result<(), String> {
     let texture_map = TextureMap::new();
 
     canvas.clear();
+    canvas.set_draw_color(Color::RGB(10, 10, 10));
     canvas.present();
 
     let mut event_pump = sdl_context.event_pump()?;
@@ -51,18 +56,18 @@ fn main() -> Result<(), String> {
         
         canvas.clear();
 
-        // draw walls...
+        // draw floors...
         const STEP: u32 = 16;
-        let mut x: i32 = 0;
-        let mut y: i32 = 0;
-        while x < 800 {
+        let mut x: u32 = 0;
+        let mut y: u32 = 0;
+        while x < WIDTH {
             while y < 600 {
                 let src = texture_map.get_rect(&FLOOR_TILE_1).unwrap();
-                canvas.copy(&texture, *src, Rect::new(x, y, STEP, STEP))?;
-                y += STEP as i32;
+                canvas.copy(&texture, *src, Rect::new(x as i32, y as i32, STEP, STEP))?;
+                y += STEP;
             }
             y = 0;
-            x += STEP as i32;
+            x += STEP;
         } 
 
         canvas.present();
@@ -71,4 +76,8 @@ fn main() -> Result<(), String> {
     }
 
     Ok(())
+}
+
+fn draw_floors() {
+
 }
