@@ -28,8 +28,8 @@ fn main() -> Result<(), String> {
             }
         }
         
-        state.update();
-        renderer.draw(&mut state);
+        state.update()?;
+        renderer.draw(&mut state)?;
         ::std::thread::sleep(d);
     }
 

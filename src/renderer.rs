@@ -49,7 +49,7 @@ impl Renderer {
     pub fn draw(&mut self, state: &mut State) -> Result<(), String>{
         let positions = state.world.read_storage::<Position>();
         let drawables = state.world.read_storage::<Drawable>();
-        let mut r1 = Rect::new(-1, -1, 0, 0);
+        let r1 = Rect::new(-1, -1, 0, 0);
         let mut r2 = Rect::new(-1, -1, 0, 0);
 
         self.canvas.clear();

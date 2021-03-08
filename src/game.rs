@@ -21,7 +21,8 @@ impl State {
         println!("pressed {}", keycode)
     }
 
-    pub fn update(&mut self) {
-        println!("updating the game state...")
+    pub fn update(&mut self) -> Result<(), String> {
+        println!("updating the game state...");
+        Ok(())
     }
 }
