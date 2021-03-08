@@ -13,6 +13,10 @@ pub struct Drawable {
     pub width: u32,
     pub height: u32,
     pub z_index: u32,
-    pub r: Rect,
+    pub texture_index: Rect,
+}
+
+#[derive(Component, Clone, Copy)]
+pub struct Animated {
     pub animation_index: i32,
 }

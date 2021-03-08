@@ -48,8 +48,9 @@ impl Renderer {
     pub fn draw(&mut self, state: &mut State) -> Result<(), String>{
         let positions = state.world.read_storage::<Position>();
         let drawables = state.world.read_storage::<Drawable>();
-        let r1 = Rect::new(-1, -1, 0, 0);
         let mut r2 = Rect::new(-1, -1, 0, 0);
+        
+        let t = &self.texture_map[&TEXTURE_ID];
 
         self.canvas.clear();
 
@@ -58,8 +59,11 @@ impl Renderer {
             r2.set_y(pos.y);
             r2.set_width(drawable.width);
             r2.set_height(drawable.height);
-            let t = &self.texture_map[&TEXTURE_ID];
-            
+
+            let mut r1: Rect;
+            // TEST FOR ANIMATED ITEMS HERE...
+            r1 = Rect::from(drawable.texture_index);
+
             self.canvas.copy(t, r1, r2)?;
         }
 

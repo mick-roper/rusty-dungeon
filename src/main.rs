@@ -3,7 +3,6 @@ extern crate sdl2;
 mod game;
 mod renderer;
 mod components;
-mod resource_management;
 
 use sdl2::event::Event;
 use std::time::Duration;
