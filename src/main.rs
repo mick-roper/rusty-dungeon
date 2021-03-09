@@ -11,6 +11,7 @@ use sdl2::pixels::Color;
 use sdl2::event::{Event};
 use sdl2::keyboard::{Keycode};
 use sdl2::rect::Rect;
+use specs::*;
 use std::time::Duration;
 
 use game::State;
@@ -78,6 +79,13 @@ fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &T
     let map = state.world.fetch::<Map>();
     draw_map(&map, canvas, tileset)?;
 
+    let positions = state.world.read_storage::<components::Position>();
+    let drawables = state.world.read_storage::<components::Drawable>();
+
+    for (pos, draw) in (&positions, &drawables).join() {
+        
+    }
+
     canvas.present();
 
     Ok(())
@@ -91,13 +99,9 @@ fn draw_map(map: &Map, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Textu
     let mut y = 0;
     let mut tile_xy: (i32, i32);
 
-    let map_width = map.width - TILE_SIZE;
-    let map_height = map.height - TILE_SIZE;
-
     // draw the floor
     while x < map.width {
         dst.set_x(x as i32);
-
         while y < map.height {
             match (x, y) {
                 (0, 0) => {
@@ -128,7 +132,6 @@ fn draw_map(map: &Map, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Textu
                     tile_xy = tile_coords::FLOOR_1;
                 }
             }
-
             let (tx, ty) = tile_xy;
             src.set_x(tx);
             src.set_y(ty);
