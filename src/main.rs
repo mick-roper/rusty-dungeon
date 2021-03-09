@@ -3,7 +3,7 @@ extern crate sdl2;
 mod game;
 mod map;
 mod components;
-mod tile_coords;
+mod texture_info;
 
 use sdl2::render::{Canvas, Texture};
 use sdl2::image::{InitFlag, LoadTexture};
@@ -19,7 +19,6 @@ use map::{Map, Tile};
 
 const WIDTH: u32 = 1024;
 const HEIGHT: u32 = 768;
-const TILE_SIZE: u32 = 16;
 
 fn main() -> Result<(), String> {
     let d = Duration::new(0, 1_000_000_000u32 / 30);
@@ -92,12 +91,12 @@ fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &T
 }
 
 fn draw_map(map: &Map, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Texture<'_>) -> Result<(), String> {
-    let mut src = Rect::new(0, 0, TILE_SIZE, TILE_SIZE);
-    let mut dst = Rect::new(0, 0, TILE_SIZE, TILE_SIZE);
+    let mut src = Rect::new(0, 0, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
+    let mut dst = Rect::new(0, 0, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
 
     let mut x = 0;
     let mut y = 0;
-    let mut tile_xy: (i32, i32);
+    let mut tile_coords: (i32, i32);
 
     // draw the floor
     while x < map.width {
@@ -105,42 +104,44 @@ fn draw_map(map: &Map, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Textu
         while y < map.height {
             match (x, y) {
                 (0, 0) => {
-                    tile_xy = tile_coords::WALL_CORNER_TOP_LEFT;
+                    tile_coords = texture_info::WALL_CORNER_TOP_LEFT;
                 },
                 (0, 752) => {
-                    tile_xy = tile_coords::WALL_CORNER_BTM_LEFT;
+                    tile_coords = texture_info::WALL_CORNER_BTM_LEFT;
                 },
                 (1008, 0) => {
-                    tile_xy = tile_coords::WALL_CORNER_TOP_RIGHT;
+                    tile_coords = texture_info::WALL_CORNER_TOP_RIGHT;
                 },
                 (1008, 752) => {
-                    tile_xy = tile_coords::WALL_CORNER_BTM_RIGHT;
+                    tile_coords = texture_info::WALL_CORNER_BTM_RIGHT;
                 },
                 (0, ..) => {
-                    tile_xy = tile_coords::WALL_LEFT_1;
+                    tile_coords = texture_info::WALL_LEFT_1;
                 },
                 (1008, ..) => {
-                    tile_xy = tile_coords::WALL_RIGHT_1;
+                    tile_coords = texture_info::WALL_RIGHT_1;
                 },
                 (.., 0) => {
-                    tile_xy = tile_coords::WALL_TOP_1;
+                    tile_coords = texture_info::WALL_TOP_1;
                 },
                 (.., 752) => {
-                    tile_xy = tile_coords::WALL_BTM_1;
+                    tile_coords = texture_info::WALL_BTM_1;
                 },
                 _ => { // floor
-                    tile_xy = tile_coords::FLOOR_1;
+                    tile_coords = texture_info::FLOOR_1;
                 }
             }
-            let (tx, ty) = tile_xy;
+            let (tx, ty) = tile_coords;
             src.set_x(tx);
             src.set_y(ty);
+
             dst.set_y(y as i32);
+
             canvas.copy(tileset, src, dst)?;
-            y += TILE_SIZE;
+            y += texture_info::TEXTURE_SIZE;
         }
 
-        x += TILE_SIZE;
+        x += texture_info::TEXTURE_SIZE;
         y = 0;
     }
 

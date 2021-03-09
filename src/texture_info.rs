@@ -1,3 +1,6 @@
+pub const TEXTURE_FILE_PATH: &str = "resources/tileset.png";
+pub const TEXTURE_SIZE: u32 = 16;
+
 pub const WALL_LEFT_1: (i32, i32) = (0, 48);
 pub const WALL_LEFT_2: (i32, i32) = (0, 64);
 pub const WALL_LEFT_3: (i32, i32) = (0, 80);

@@ -11,7 +11,7 @@ impl State {
     pub fn new(width: u32, height: u32) -> State {
         let mut world = World::empty();
 
-        world.insert(map::Map::new(width, height));
+        // world.insert(map::Map::new(width, height));
 
         // world.insert(Map::new(width, height));
         world.register::<components::Position>();
