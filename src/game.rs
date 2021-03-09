@@ -1,20 +1,22 @@
 use specs::*;
 use sdl2::keyboard::Keycode;
 
-use super::components::*;
+use super::*;
 
 pub struct State {
     pub world: World
 }
 
 impl State {
-    pub fn new(_width: u32, _height: u32) -> State {
+    pub fn new(width: u32, height: u32) -> State {
         let mut world = World::empty();
 
+        world.insert(map::Map::new(width, height));
+
         // world.insert(Map::new(width, height));
-        world.register::<Position>();
-        world.register::<Drawable>();
-        world.register::<Animated>();
+        world.register::<components::Position>();
+        world.register::<components::Drawable>();
+        world.register::<components::Animated>();
 
         State{world}
     }
