@@ -85,50 +85,51 @@ fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &T
 
 fn draw_map(map: &Map, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Texture<'_>) -> Result<(), String> {
     let mut src = Rect::new(0, 0, TILE_SIZE, TILE_SIZE);
-    let mut dest = Rect::new(0, 0, TILE_SIZE, TILE_SIZE);
+    let mut dst = Rect::new(0, 0, TILE_SIZE, TILE_SIZE);
 
     let mut x = 0;
     let mut y = 0;
-    let mut tile_xy = (0, 0);
+    let mut tile_xy: (i32, i32);
+
+    let map_width = map.width - TILE_SIZE;
+    let map_height = map.height - TILE_SIZE;
 
     // draw the floor
     while x < map.width {
-        dest.set_x(x as i32);
+        dst.set_x(x as i32);
 
         while y < map.height {
-            dest.set_y(y as i32);
-
-            if x == 0 {
-                if y == 0 {
+            match (x, y) {
+                (0, 0) => {
                     tile_xy = tile_coords::WALL_CORNER_TOP_LEFT;
-                } else if y == map.height -1 {
-                    tile_xy = tile_coords::WALL_CORNER_BTM_LEFT;
-                } else {
-                    tile_xy = tile_coords::WALL_TOP_1;
                 }
-            } else if x == map.width -1 {
-                if y == 0 {
-                    tile_xy = tile_coords::WALL_CORNER_TOP_RIGHT;
-                } else if y == map.height -1 {
-                    tile_xy = tile_coords::WALL_CORNER_BTM_RIGHT;
-                } else {
-                    tile_xy = tile_coords::WALL_BTM_1;
-                }
-            } else {
-                match map.tile_at(x, y) {
-                    Tile::Wall => {
-                        panic!("can't draw walls!!");
-                    },
-                    Tile::Floor => {
-                        tile_xy = tile_coords::FLOOR_1;
-                    },
+                // (0, map_height) => {
+                //     tile_xy = tile_coords::WALL_CORNER_BTM_LEFT;
+                // }
+                // (0, ..) => {
+                //     tile_xy = tile_coords::WALL_LEFT_1;
+                // }
+                // (map_width, ..) => {
+                //     tile_xy = tile_coords::WALL_RIGHT_1;
+                // }
+                // (map_width, 0) => {
+                //     tile_xy = tile_coords::WALL_CORNER_TOP_RIGHT;
+                // }
+                // (map_width, map_height) => {
+                //     tile_xy = tile_coords::WALL_CORNER_BTM_RIGHT;
+                // }
+                _ => { // floor
+                    tile_xy = tile_coords::VOID;
                 }
             }
-            
-            src.set_x(tile_xy.0 as i32);
-            src.set_y(tile_xy.1 as i32);
 
-            canvas.copy(tileset, src, dest)?;
+            let (tx, ty) = tile_xy;
+            src.set_x(tx);
+            src.set_y(ty);
+
+            dst.set_y(y as i32);
+
+            canvas.copy(tileset, src, dst)?;
             y += TILE_SIZE;
         }
 
