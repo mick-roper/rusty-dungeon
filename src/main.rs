@@ -1,6 +1,5 @@
 extern crate sdl2;
 
-mod drawing;
 mod game;
 mod components;
 
@@ -11,7 +10,6 @@ use sdl2::event::Event;
 use std::time::Duration;
 
 use game::State;
-use drawing::{TextureMap};
 
 const WIDTH: u32 = 800;
 const HEIGHT: u32 = 600;
@@ -33,8 +31,7 @@ fn main() -> Result<(), String> {
         .build()
         .map_err(|e| e.to_string())?;
     let texture_creator = canvas.texture_creator();
-    let texture = texture_creator.load_texture("resources/tileset.png")?;
-    let texture_map = TextureMap::new();
+    let tileset = texture_creator.load_texture("resources/tileset.png");
 
     canvas.clear();
     canvas.set_draw_color(Color::RGB(20, 20, 20));
