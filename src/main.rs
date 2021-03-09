@@ -82,8 +82,8 @@ fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &T
     let positions = state.world.read_storage::<components::Position>();
     let drawables = state.world.read_storage::<components::Drawable>();
 
-    for (pos, draw) in (&positions, &drawables).join() {
-        
+    for (_pos, _draw) in (&positions, &drawables).join() {
+        // todo: implement this
     }
 
     canvas.present();
