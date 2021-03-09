@@ -8,7 +8,7 @@ pub struct Map {
 }
 
 impl Map {
-    pub fn new(width: u32, height: u32, room_count: u32) -> Map {
+    pub fn new(_width: u32, _height: u32, _room_count: u32) -> Map {
         panic!("not implemented!");
 
         // todo: iterate rooms and use them to update the tiles
