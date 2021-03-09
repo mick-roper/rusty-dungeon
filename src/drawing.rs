@@ -1,6 +1,8 @@
 use sdl2::rect::Rect;
 use std::collections::HashMap;
 
+use super::game::State;
+
 pub const FLOOR_TILE_1: u32 = 0;
 pub const FLOOR_TILE_2: u32 = 1;
 pub const FLOOR_TILE_3: u32 = 2;
@@ -34,4 +36,8 @@ impl TextureMap {
     pub fn get_rect(&self, idx: &u32) -> Option<&Rect> {
         self.map.get(idx)
     }
+}
+
+pub fn draw(state: &mut State) {
+
 }

@@ -1,6 +1,6 @@
 extern crate sdl2;
 
-mod texture_map;
+mod drawing;
 mod game;
 mod components;
 
@@ -11,7 +11,7 @@ use sdl2::event::Event;
 use std::time::Duration;
 
 use game::State;
-use texture_map::*;
+use drawing::{TextureMap};
 
 const WIDTH: u32 = 800;
 const HEIGHT: u32 = 600;
@@ -37,11 +37,11 @@ fn main() -> Result<(), String> {
     let texture_map = TextureMap::new();
 
     canvas.clear();
-    canvas.set_draw_color(Color::RGB(10, 10, 10));
+    canvas.set_draw_color(Color::RGB(20, 20, 20));
     canvas.present();
 
     let mut event_pump = sdl_context.event_pump()?;
-    let mut state = State::new();
+    let mut state = State::new(WIDTH, HEIGHT);
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -53,16 +53,17 @@ fn main() -> Result<(), String> {
         }
         
         state.update()?;
-        
         canvas.clear();
 
         // draw floors...
+        // draw(&mut state, &mut canvas, &texture_map);
+
         const STEP: u32 = 16;
-        let mut x: u32 = 0;
-        let mut y: u32 = 0;
-        while x < WIDTH {
-            while y < 600 {
-                let src = texture_map.get_rect(&FLOOR_TILE_1).unwrap();
+        let mut x: u32 = 100;
+        let mut y: u32 = 100;
+        while x < WIDTH/2 {
+            while y < HEIGHT/2 {
+                let src = texture_map.get_rect(&drawing::FLOOR_TILE_1).unwrap();
                 canvas.copy(&texture, *src, Rect::new(x as i32, y as i32, STEP, STEP))?;
                 y += STEP;
             }
@@ -76,8 +77,4 @@ fn main() -> Result<(), String> {
     }
 
     Ok(())
-}
-
-fn draw_floors() {
-
 }
