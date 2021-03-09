@@ -102,33 +102,37 @@ fn draw_map(map: &Map, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Textu
             match (x, y) {
                 (0, 0) => {
                     tile_xy = tile_coords::WALL_CORNER_TOP_LEFT;
-                }
-                // (0, map_height) => {
-                //     tile_xy = tile_coords::WALL_CORNER_BTM_LEFT;
-                // }
-                // (0, ..) => {
-                //     tile_xy = tile_coords::WALL_LEFT_1;
-                // }
-                // (map_width, ..) => {
-                //     tile_xy = tile_coords::WALL_RIGHT_1;
-                // }
-                // (map_width, 0) => {
-                //     tile_xy = tile_coords::WALL_CORNER_TOP_RIGHT;
-                // }
-                // (map_width, map_height) => {
-                //     tile_xy = tile_coords::WALL_CORNER_BTM_RIGHT;
-                // }
+                },
+                (0, 752) => {
+                    tile_xy = tile_coords::WALL_CORNER_BTM_LEFT;
+                },
+                (1008, 0) => {
+                    tile_xy = tile_coords::WALL_CORNER_TOP_RIGHT;
+                },
+                (1008, 752) => {
+                    tile_xy = tile_coords::WALL_CORNER_BTM_RIGHT;
+                },
+                (0, ..) => {
+                    tile_xy = tile_coords::WALL_LEFT_1;
+                },
+                (1008, ..) => {
+                    tile_xy = tile_coords::WALL_RIGHT_1;
+                },
+                (.., 0) => {
+                    tile_xy = tile_coords::WALL_TOP_1;
+                },
+                (.., 752) => {
+                    tile_xy = tile_coords::WALL_BTM_1;
+                },
                 _ => { // floor
-                    tile_xy = tile_coords::VOID;
+                    tile_xy = tile_coords::FLOOR_1;
                 }
             }
 
             let (tx, ty) = tile_xy;
             src.set_x(tx);
             src.set_y(ty);
-
             dst.set_y(y as i32);
-
             canvas.copy(tileset, src, dst)?;
             y += TILE_SIZE;
         }
