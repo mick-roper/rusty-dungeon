@@ -1,6 +1,5 @@
 use specs::prelude::*;
 use specs_derive::*;
-use sdl2::rect::Rect;
 
 #[derive(Component, Copy, Clone)]
 pub struct Position {
@@ -13,7 +12,7 @@ pub struct Drawable {
     pub width: u32,
     pub height: u32,
     pub z_index: u32,
-    pub texture_index: Rect,
+    pub texture_index: (i32, i32),
 }
 
 #[derive(Component, Clone, Copy)]
