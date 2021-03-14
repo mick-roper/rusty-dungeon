@@ -1,9 +1,9 @@
 extern crate sdl2;
 
 mod game;
-mod map;
 mod components;
 mod texture_info;
+mod map;
 
 use sdl2::render::{Canvas, Texture};
 use sdl2::image::{InitFlag, LoadTexture};
@@ -15,7 +15,7 @@ use specs::*;
 use std::time::Duration;
 
 use game::State;
-use map::{Map, Tile};
+use map::Map;
 
 const WIDTH: u32 = 1024;
 const HEIGHT: u32 = 768;
@@ -37,7 +37,7 @@ fn main() -> Result<(), String> {
         .build()
         .map_err(|e| e.to_string())?;
     let texture_creator = canvas.texture_creator();
-    let tileset = texture_creator.load_texture("resources/tileset.png")?;
+    let tileset = texture_creator.load_texture(texture_info::TEXTURE_FILE_PATH)?;
 
     canvas.clear();
     canvas.set_draw_color(Color::RGB(20, 20, 20));
@@ -75,11 +75,11 @@ fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &T
     canvas.set_draw_color(Color::RGB(20, 20, 20));
 
     // 1: draw the map
-    let map = state.world.fetch::<Map>();
+    let map = state.ecs.fetch::<Map>();
     draw_map(&map, canvas, tileset)?;
 
-    let positions = state.world.read_storage::<components::Position>();
-    let drawables = state.world.read_storage::<components::Drawable>();
+    let positions = state.ecs.read_storage::<components::Position>();
+    let drawables = state.ecs.read_storage::<components::Drawable>();
 
     for (_pos, _draw) in (&positions, &drawables).join() {
         // todo: implement this
@@ -91,58 +91,14 @@ fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &T
 }
 
 fn draw_map(map: &Map, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Texture<'_>) -> Result<(), String> {
-    let mut src = Rect::new(0, 0, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
     let mut dst = Rect::new(0, 0, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
 
-    let mut x = 0;
-    let mut y = 0;
-    let mut tile_coords: (i32, i32);
-
     // draw the floor
-    while x < map.width {
-        dst.set_x(x as i32);
-        while y < map.height {
-            match (x, y) {
-                (0, 0) => {
-                    tile_coords = texture_info::WALL_CORNER_TOP_LEFT;
-                },
-                (0, 752) => {
-                    tile_coords = texture_info::WALL_CORNER_BTM_LEFT;
-                },
-                (1008, 0) => {
-                    tile_coords = texture_info::WALL_CORNER_TOP_RIGHT;
-                },
-                (1008, 752) => {
-                    tile_coords = texture_info::WALL_CORNER_BTM_RIGHT;
-                },
-                (0, ..) => {
-                    tile_coords = texture_info::WALL_LEFT_1;
-                },
-                (1008, ..) => {
-                    tile_coords = texture_info::WALL_RIGHT_1;
-                },
-                (.., 0) => {
-                    tile_coords = texture_info::WALL_TOP_1;
-                },
-                (.., 752) => {
-                    tile_coords = texture_info::WALL_BTM_1;
-                },
-                _ => { // floor
-                    tile_coords = texture_info::FLOOR_1;
-                }
-            }
-            let (tx, ty) = tile_coords;
-            src.set_x(tx);
-            src.set_y(ty);
+    for tile in map.get_tiles().iter() {
+        dst.set_x(tile.position.x);
+        dst.set_y(tile.position.y);
 
-            dst.set_y(y as i32);
-
-            canvas.copy(tileset, src, dst)?;
-            y += texture_info::TEXTURE_SIZE;
-        }
-
-        x += texture_info::TEXTURE_SIZE;
-        y = 0;
+        canvas.copy(tileset, tile.texture_src, dst)?;
     }
 
     Ok(())

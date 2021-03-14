@@ -4,21 +4,19 @@ use sdl2::keyboard::Keycode;
 use super::*;
 
 pub struct State {
-    pub world: World
+    pub ecs: World
 }
 
 impl State {
     pub fn new(width: u32, height: u32) -> State {
-        let mut world = World::empty();
+        let mut ecs = World::empty();
 
-        // world.insert(map::Map::new(width, height));
+        ecs.insert(map::Map::new(width as i32, height as i32));
+        ecs.register::<components::Position>();
+        ecs.register::<components::Drawable>();
+        ecs.register::<components::Animated>();
 
-        // world.insert(Map::new(width, height));
-        world.register::<components::Position>();
-        world.register::<components::Drawable>();
-        world.register::<components::Animated>();
-
-        State{world}
+        State{ecs}
     }
 
     pub fn handle_input(&mut self, keycode: Keycode) {
