@@ -7,24 +7,31 @@ pub struct Map {
 }
 
 impl Map {
-    pub fn new(width: i32, height: i32) -> Map {
-        let mut tiles = vec![Tile{position: Point::new(-1, -1), texture_src: Rect::new(VOID.0, VOID.1, TEXTURE_SIZE, TEXTURE_SIZE)}; (width * height) as usize];
+    pub fn new(width: u32, height: u32) -> Map {
+        let n_width = width / TEXTURE_SIZE;
+        let n_height = height / TEXTURE_SIZE;
+        let mut tiles = vec![Tile{position: Point::new(-1, -1), texture_src: Rect::new(VOID.0, VOID.1, TEXTURE_SIZE, TEXTURE_SIZE)}; (n_width * n_height) as usize];
 
-        let t = TEXTURE_SIZE as i32;
         let mut x = 0;
         let mut y = 0;
 
-        while x < width {
-            while y < height {
+        while x < (width * TEXTURE_SIZE) {
+            while y < (height * TEXTURE_SIZE) {
                 let idx = xy_idx(width, x, y);
-                tiles[idx].position.x = x;
-                tiles[idx].position.y = y;
+                tiles[idx].position.x = x as i32;
+                tiles[idx].position.y = y as i32;
 
-                y += t;
+                y += TEXTURE_SIZE;
             }
 
-            x += t;
+            x += TEXTURE_SIZE;
             y = 0;
+        }
+
+        let rooms = generate_rooms(1, width, height);
+
+        for r in rooms.iter() {
+
         }
 
         Map{tiles}
@@ -35,12 +42,23 @@ impl Map {
     }
 }
 
+fn xy_idx(width: u32, x: u32, y: u32) -> usize {
+    (width * y + x) as usize
+}
+
 #[derive(Copy, Clone)]
 pub struct Tile {
     pub position: Point,
     pub texture_src: Rect,
 }
 
-fn xy_idx(width: i32, x: i32, y: i32) -> usize {
-    (width * y + x) as usize
+fn generate_rooms(room_count: usize, width: u32, height: u32) -> Vec<Rect> {
+    let mut rooms = Vec::new();
+
+    for _ in 0..room_count {
+        let r = Rect::new(200, 275, 15, 15);
+        rooms.push(r);
+    }
+
+    rooms
 }

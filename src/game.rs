@@ -11,7 +11,7 @@ impl State {
     pub fn new(width: u32, height: u32) -> State {
         let mut ecs = World::empty();
 
-        ecs.insert(map::Map::new(width as i32, height as i32));
+        ecs.insert(map::Map::new(width, height));
         ecs.register::<components::Position>();
         ecs.register::<components::Drawable>();
         ecs.register::<components::Animated>();
