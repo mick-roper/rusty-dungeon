@@ -4,6 +4,7 @@ use super::texture_info::{VOID, TEXTURE_SIZE};
 
 pub struct Map {
     tiles: Vec<Tile>,
+    rooms: Vec<Rect>,
 }
 
 impl Map {
@@ -12,29 +13,15 @@ impl Map {
         let n_height = height / TEXTURE_SIZE;
         let mut tiles = vec![Tile{position: Point::new(-1, -1), texture_src: Rect::new(VOID.0, VOID.1, TEXTURE_SIZE, TEXTURE_SIZE)}; (n_width * n_height) as usize];
 
-        let mut x = 0;
-        let mut y = 0;
-
-        while x < (width * TEXTURE_SIZE) {
-            while y < (height * TEXTURE_SIZE) {
-                let idx = xy_idx(width, x, y);
-                tiles[idx].position.x = x as i32;
-                tiles[idx].position.y = y as i32;
-
-                y += TEXTURE_SIZE;
+        for x in 0..n_width {
+            for y in 0..n_height {
+                println!("{} {}", x, y);
             }
-
-            x += TEXTURE_SIZE;
-            y = 0;
         }
 
         let rooms = generate_rooms(1, width, height);
 
-        for r in rooms.iter() {
-
-        }
-
-        Map{tiles}
+        Map{tiles, rooms}
     }
 
     pub fn get_tiles(&self) -> &Vec<Tile> {
