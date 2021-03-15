@@ -37,8 +37,9 @@ impl Map {
         Map{width, tiles, rooms}
     }
 
-    pub fn get_tiles(&self) -> &Vec<Tile> {
-        &self.tiles
+    pub fn tile_at(&self, x: i32, y: i32) -> &Tile {
+        let idx = xy_idx(self.width, x, y);
+        &self.tiles[idx]
     }
 }
 
@@ -51,7 +52,7 @@ pub struct Tile {
     pub tile_type: TileType
 }
 
-#[derive(Copy,Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum TileType {
     Void,
     Wall,

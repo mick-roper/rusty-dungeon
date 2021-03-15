@@ -15,7 +15,7 @@ use specs::*;
 use std::time::Duration;
 
 use game::State;
-use map::Map;
+use map::{Map, TileType};
 
 const WIDTH: u32 = 1024;
 const HEIGHT: u32 = 768;
@@ -76,7 +76,7 @@ fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &T
 
     // 1: draw the map
     let map = state.ecs.fetch::<Map>();
-    draw_map(&map, canvas, tileset)?;
+    draw_map(150, 250, &map, canvas, tileset)?;
 
     let positions = state.ecs.read_storage::<components::Position>();
     let drawables = state.ecs.read_storage::<components::Drawable>();
@@ -90,15 +90,39 @@ fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &T
     Ok(())
 }
 
-fn draw_map(map: &Map, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Texture<'_>) -> Result<(), String> {
+fn draw_map(centre_x: i32, centre_y: i32, map: &Map, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Texture<'_>) -> Result<(), String> {
+    let mut src = Rect::new(0, 0, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
     let mut dst = Rect::new(0, 0, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
 
-    // draw the floor
-    for tile in map.get_tiles().iter() {
-        dst.set_x(tile.position.x);
-        dst.set_y(tile.position.y);
+    let (w, h) = canvas.window().drawable_size();
+    let half_w = w as i32 / 2;
+    let half_h = h as i32 / 2;
+    let x1 = centre_x - half_w;
+    let x2 = centre_x + half_w;
+    let y1 = centre_y - half_w;
+    let y2 = centre_y + half_h;
 
-        canvas.copy(tileset, tile.texture_src, dst)?;
+    let t_size = texture_info::TEXTURE_SIZE as i32;
+
+    for x in x1..x2 {
+        dst.set_x(x);
+        for y in y1..y2 {
+            dst.set_y(y);
+
+            let tile = map.tile_at(x / t_size, y / t_size);
+            let mut texture_point = texture_info::VOID;
+
+            if tile.tile_type == TileType::Wall {
+                texture_point = texture_info::WALL_TOP_1;
+            } else if tile.tile_type == TileType::Floor {
+                texture_point = texture_info::FLOOR_1;
+            }
+
+            src.set_x(texture_point.0);
+            src.set_y(texture_point.1);
+
+            canvas.copy(tileset, src, dst)?;
+        }
     }
 
     Ok(())
