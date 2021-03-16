@@ -76,7 +76,19 @@ fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &T
 
     // 1: draw the map
     let map = state.ecs.fetch::<Map>();
-    draw_map(150, 250, &map, canvas, tileset);
+    
+    let players = state.ecs.read_storage::<components::Player>();
+    let positions = state.ecs.read_storage::<components::Position>();
+    let mut centre_x: i32 = -1;
+    let mut centre_y: i32 = -1;
+
+    for (_player, pos) in (&players, &positions).join() {
+        centre_x = pos.x;
+        centre_y = pos.y;
+        break
+    }
+
+    draw_map(centre_x, centre_y, &map, canvas, tileset);
 
     let mut src = Rect::new(-1, -1, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
     let mut dst = Rect::new(-1, -1, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
