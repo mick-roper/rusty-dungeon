@@ -3,9 +3,10 @@ use sdl2::rect::{Rect, Point};
 use super::texture_info::{VOID, TEXTURE_SIZE};
 
 pub struct Map {
-    width: u32,
-    tiles: Vec<Tile>,
+    pub width: u32,
+    pub height: u32,
     pub rooms: Vec<Rect>,
+    tiles: Vec<Tile>,
 }
 
 impl Map {
@@ -13,38 +14,38 @@ impl Map {
         let mut tiles = vec![Tile{tile_type: TileType::Void}; (width * height) as usize];
         let rooms = generate_rooms(1, width, height);
 
-        for room in rooms.iter() {
-            let r_x = room.x();
-            let r_x2 = r_x + room.width() as i32;
-            let r_y = room.y();
-            let r_y2 = r_y + room.height() as i32;
+        // for room in rooms.iter() {
+        //     let r_x = room.x();
+        //     let r_x2 = r_x + room.width() as i32;
+        //     let r_y = room.y();
+        //     let r_y2 = r_y + room.height() as i32;
 
-            for x in r_x..r_x2 {
-                for y in r_y..r_y2 {
-                    let idx = xy_idx(width, x, y);
-                    let new_tile_type: TileType;
-                    if x == r_x || x == r_x2 || y == r_y || y == r_y2 {
-                        new_tile_type = TileType::Wall;
-                    } else {
-                        new_tile_type = TileType::Floor;
-                    }
+        //     for x in r_x..r_x2 {
+        //         for y in r_y..r_y2 {
+        //             let idx = xy_idx(width, x, y);
+        //             let new_tile_type: TileType;
+        //             if x == r_x || x == r_x2 || y == r_y || y == r_y2 {
+        //                 new_tile_type = TileType::Wall;
+        //             } else {
+        //                 new_tile_type = TileType::Floor;
+        //             }
 
-                    tiles[idx].tile_type = new_tile_type;
-                }
-            }
-        }
+        //             tiles[idx].tile_type = new_tile_type;
+        //         }
+        //     }
+        // }
 
-        Map{width, tiles, rooms}
+        Map{width, height, tiles, rooms}
     }
 
-    pub fn tile_at(&self, x: i32, y: i32) -> &Tile {
+    pub fn tile_at(&self, x: u32, y: u32) -> &Tile {
         let idx = xy_idx(self.width, x, y);
         &self.tiles[idx]
     }
 }
 
-fn xy_idx(width: u32, x: i32, y: i32) -> usize {
-    (width as i32 * y + x) as usize
+fn xy_idx(width: u32, x: u32, y: u32) -> usize {
+    (width * y + x) as usize
 }
 
 #[derive(Copy, Clone)]

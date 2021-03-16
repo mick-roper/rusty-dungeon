@@ -19,9 +19,9 @@ use map::{Map, TileType};
 
 const WIDTH: u32 = 1024;
 const HEIGHT: u32 = 768;
+const FRAME_RATE: u64 = 1000 / 30;
 
 fn main() -> Result<(), String> {
-    let d = Duration::new(0, 1_000_000_000u32 / 30);
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
     let _image_context = sdl2::image::init(InitFlag::PNG)?;
@@ -43,8 +43,8 @@ fn main() -> Result<(), String> {
     canvas.set_draw_color(Color::RGB(20, 20, 20));
     canvas.present();
 
-    let mut event_pump = sdl_context.event_pump()?;
-    let mut state = State::new(WIDTH, HEIGHT);
+    let mut event_pump = sdl_context.event_pump().expect("counldnt get event pump");
+    let mut state = State::new(WIDTH * 5, HEIGHT * 5);
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -61,69 +61,64 @@ fn main() -> Result<(), String> {
         }
         
         state.update()?;
-        draw(&mut state, &mut canvas, &tileset)?;
+        draw(&mut state, &mut canvas, &tileset);
 
-        ::std::thread::sleep(d);
+        ::std::thread::sleep(Duration::from_millis(FRAME_RATE));
     }
+
+    println!("quitting...");
 
     Ok(())
 }
 
-fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Texture<'_>) -> Result<(), String> {
+fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Texture<'_>) {
     canvas.clear();
-
-    canvas.set_draw_color(Color::RGB(20, 20, 20));
 
     // 1: draw the map
     let map = state.ecs.fetch::<Map>();
-    draw_map(150, 250, &map, canvas, tileset)?;
+    draw_map(150, 250, &map, canvas, tileset);
 
-    let positions = state.ecs.read_storage::<components::Position>();
-    let drawables = state.ecs.read_storage::<components::Drawable>();
+    // let positions = state.ecs.read_storage::<components::Position>();
+    // let drawables = state.ecs.read_storage::<components::Drawable>();
 
-    for (_pos, _draw) in (&positions, &drawables).join() {
-        // todo: implement this
-    }
+    // for (_pos, _draw) in (&positions, &drawables).join() {
+    //     // todo: implement this
+    // }
 
     canvas.present();
-
-    Ok(())
 }
 
-fn draw_map(centre_x: i32, centre_y: i32, map: &Map, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Texture<'_>) -> Result<(), String> {
-    let mut src = Rect::new(0, 0, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
-    let mut dst = Rect::new(0, 0, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
+fn draw_map(centre_x: i32, centre_y: i32, map: &Map, canvas: &mut Canvas<sdl2::video::Window>, tileset: &Texture<'_>) {
+    let (canvas_x, canvas_y) = canvas.window().drawable_size();
+    let mut src = Rect::new(-1, -1, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
+    let mut dst = Rect::new(-1, -1, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
 
-    let (w, h) = canvas.window().drawable_size();
-    let half_w = w as i32 / 2;
-    let half_h = h as i32 / 2;
-    let x1 = centre_x - half_w;
-    let x2 = centre_x + half_w;
-    let y1 = centre_y - half_w;
-    let y2 = centre_y + half_h;
+    for x in 0..map.width {
+        let t_x = x * texture_info::TEXTURE_SIZE;
+        if t_x > canvas_x {
+            break
+        }
 
-    let t_size = texture_info::TEXTURE_SIZE as i32;
+        for y in 0..map.height {
+            let t_y = y * texture_info::TEXTURE_SIZE;
 
-    for x in x1..x2 {
-        dst.set_x(x);
-        for y in y1..y2 {
-            dst.set_y(y);
-
-            let tile = map.tile_at(x / t_size, y / t_size);
-            let mut texture_point = texture_info::VOID;
-
-            if tile.tile_type == TileType::Wall {
-                texture_point = texture_info::WALL_TOP_1;
-            } else if tile.tile_type == TileType::Floor {
-                texture_point = texture_info::FLOOR_1;
+            if t_y > canvas_y {
+                break
             }
 
-            src.set_x(texture_point.0);
-            src.set_y(texture_point.1);
+            let tile = map.tile_at(x, y);
+            let texture_pos = match tile.tile_type {
+                TileType::Floor => texture_info::FLOOR_1,
+                TileType::Wall => texture_info::WALL_TOP_1,
+                TileType::Void => texture_info::VOID,
+            };
 
-            canvas.copy(tileset, src, dst)?;
+            src.set_x(texture_pos.0);
+            src.set_y(texture_pos.1);
+            dst.set_x(t_x as i32);
+            dst.set_y(t_y as i32);
+
+            canvas.copy(tileset, src, dst).expect("could not copy the texture")
         }
     }
-
-    Ok(())
 }
