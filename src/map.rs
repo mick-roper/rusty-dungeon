@@ -47,6 +47,10 @@ impl Map {
         let idx = xy_idx(self.width, x, y);
         &self.tiles[idx]
     }
+
+    pub fn first_room(&self) -> &Rect {
+        &self.rooms[0]
+    }
 }
 
 fn xy_idx(width: u32, x: u32, y: u32) -> usize {

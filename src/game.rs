@@ -10,11 +10,30 @@ pub struct State {
 impl State {
     pub fn new(width: u32, height: u32) -> State {
         let mut ecs = World::empty();
+        
+        let map: map::Map;
+        let player_x: i32;
+        let player_y: i32;
 
-        ecs.insert(map::Map::new(width, height));
+        {
+            map = map::Map::new(width, height);
+            player_x = map.first_room().x();
+            player_y = map.first_room().y();
+        }
+
+        ecs.insert(map);
         ecs.register::<components::Position>();
         ecs.register::<components::Drawable>();
         ecs.register::<components::Animated>();
+        ecs.register::<components::Player>();
+
+        ecs.create_entity()
+            .with(components::Player{})
+            .with(components::Position{
+                x: player_x,
+                y: player_y,
+            })
+            .build();
 
         State{ecs}
     }

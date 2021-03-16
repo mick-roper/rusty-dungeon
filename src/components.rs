@@ -19,3 +19,6 @@ pub struct Drawable {
 pub struct Animated {
     pub animation_index: i32,
 }
+
+#[derive(Component, Copy, Clone)]
+pub struct Player{}
