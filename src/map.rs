@@ -1,5 +1,6 @@
 use sdl2::rect::{Rect};
 use rand::{thread_rng, Rng};
+use std::cmp::min;
 
 pub struct Map {
     pub width: u32,
@@ -15,13 +16,18 @@ impl Map {
 
         for room in rooms.iter() {
             let r_x = room.x();
-            let r_x2 = r_x + room.width() as i32;
             let r_y = room.y();
-            let r_y2 = r_y + room.height() as i32;
+            let r_x2 = min(r_x + room.width() as i32, width as i32);
+            let r_y2 = min(r_y + room.height() as i32, height as i32);
 
             for x in r_x..r_x2 {
                 for y in r_y..r_y2 {
                     let idx = xy_idx(width, x as u32, y as u32);
+
+                    if idx > tiles.len() {
+                        panic!("{}*{}+{}={} is greater than {}", width, y, x, idx, tiles.len());
+                    }
+
                     let new_tile_type: TileType;
                     if (x == r_x || x == r_x2-1 || y == r_y || y == r_y2-1) && tiles[idx].tile_type != TileType::Floor {
                         new_tile_type = TileType::Wall;

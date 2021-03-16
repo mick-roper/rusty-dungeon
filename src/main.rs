@@ -43,8 +43,8 @@ fn main() -> Result<(), String> {
     canvas.set_draw_color(Color::RGB(20, 20, 20));
     canvas.present();
 
-    let mut event_pump = sdl_context.event_pump().expect("counldnt get event pump");
-    let mut state = State::new(50, 50);
+    let mut event_pump = sdl_context.event_pump().expect("couldnt get event pump");
+    let mut state = State::new(100, 100);
 
     'running: loop {
         for event in event_pump.poll_iter() {
