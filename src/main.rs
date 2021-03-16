@@ -112,6 +112,8 @@ fn draw_map(centre_x: i32, centre_y: i32, map: &Map, canvas: &mut Canvas<sdl2::v
     let mut src = Rect::new(-1, -1, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
     let mut dst = Rect::new(-1, -1, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
 
+    // todo: centre the map on the player
+
     for x in 0..map.width {
         let t_x = x * texture_info::TEXTURE_SIZE;
         if t_x > canvas_x {
