@@ -36,3 +36,5 @@ pub const FLOOR_7: (i32, i32) = (32, 144);
 pub const FLOOR_8: (i32, i32) = (48, 144);
 
 pub const VOID: (i32, i32) = (128, 144);
+
+pub const PLAYER: (i32, i32) = (0, 0);

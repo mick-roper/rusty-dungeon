@@ -9,7 +9,7 @@ pub struct State {
 
 impl State {
     pub fn new(width: u32, height: u32) -> State {
-        let mut ecs = World::empty();
+        let mut ecs = World::new();
         
         let map: map::Map;
         let player_x: i32;
@@ -29,6 +29,12 @@ impl State {
 
         ecs.create_entity()
             .with(components::Player{})
+            .with(components::Drawable{
+                width: texture_info::TEXTURE_SIZE,
+                height: texture_info::TEXTURE_SIZE,
+                z_index: 1,
+                texture_index: texture_info::PLAYER,
+            })
             .with(components::Position{
                 x: player_x,
                 y: player_y,
