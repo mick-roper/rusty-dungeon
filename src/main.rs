@@ -78,12 +78,19 @@ fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &T
     let map = state.ecs.fetch::<Map>();
     draw_map(150, 250, &map, canvas, tileset);
 
-    // let positions = state.ecs.read_storage::<components::Position>();
-    // let drawables = state.ecs.read_storage::<components::Drawable>();
+    let mut src = Rect::new(-1, -1, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
+    let mut dst = Rect::new(-1, -1, texture_info::TEXTURE_SIZE, texture_info::TEXTURE_SIZE);
+    let positions = state.ecs.read_storage::<components::Position>();
+    let drawables = state.ecs.read_storage::<components::Drawable>();
 
-    // for (_pos, _draw) in (&positions, &drawables).join() {
-    //     // todo: implement this
-    // }
+    for (pos, draw) in (&positions, &drawables).join() {
+        src.set_x(draw.texture_index.0);
+        src.set_y(draw.texture_index.1);
+        dst.set_x(pos.x);
+        dst.set_y(pos.y);
+
+        canvas.copy(tileset, src, dst).expect("could not draw tileset");
+    }
 
     canvas.present();
 }

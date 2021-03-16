@@ -45,7 +45,18 @@ impl State {
     }
 
     pub fn handle_input(&mut self, keycode: Keycode) {
-        println!("pressed {}", keycode)
+        let players = self.ecs.read_storage::<components::Player>();
+        let mut positions = self.ecs.write_storage::<components::Position>();
+
+        for (_player, pos) in (&players, &mut positions).join() {
+            match keycode {
+                Keycode::Left => pos.x -= texture_info::TEXTURE_SIZE as i32,
+                Keycode::Right => pos.x += texture_info::TEXTURE_SIZE as i32,
+                Keycode::Up => pos.y -= texture_info::TEXTURE_SIZE as i32,
+                Keycode::Down => pos.y += texture_info::TEXTURE_SIZE as i32,
+                _ => {}
+            }
+        }
     }
 
     pub fn update(&mut self) -> Result<(), String> {
