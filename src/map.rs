@@ -11,7 +11,7 @@ pub struct Map {
 impl Map {
     pub fn new(width: u32, height: u32) -> Map {
         let mut tiles = vec![Tile{tile_type: TileType::Void}; (width * height) as usize];
-        let rooms = generate_rooms(1, width / 10, height / 10);
+        let rooms = generate_rooms(10, width, height);
 
         for room in rooms.iter() {
             let r_x = room.x();
@@ -23,7 +23,7 @@ impl Map {
                 for y in r_y..r_y2 {
                     let idx = xy_idx(width, x as u32, y as u32);
                     let new_tile_type: TileType;
-                    if x == r_x || x == r_x2-1 || y == r_y || y == r_y2-1 {
+                    if (x == r_x || x == r_x2-1 || y == r_y || y == r_y2-1) && tiles[idx].tile_type != TileType::Floor {
                         new_tile_type = TileType::Wall;
                     } else {
                         new_tile_type = TileType::Floor;

@@ -44,7 +44,7 @@ fn main() -> Result<(), String> {
     canvas.present();
 
     let mut event_pump = sdl_context.event_pump().expect("counldnt get event pump");
-    let mut state = State::new(WIDTH * 5, HEIGHT * 5);
+    let mut state = State::new(50, 50);
 
     'running: loop {
         for event in event_pump.poll_iter() {
