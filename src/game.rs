@@ -17,9 +17,12 @@ impl State {
 
         {
             map = map::Map::new(width, height);
-            player_x = map.first_room().x();
-            player_y = map.first_room().y();
+            let room = map.first_room();
+            player_x = room.center().x();
+            player_y = room.center().y();
         }
+
+        println!("player start pos: {} {}", player_x, player_y);
 
         ecs.insert(map);
         ecs.register::<components::Position>();
@@ -45,18 +48,15 @@ impl State {
     }
 
     pub fn handle_input(&mut self, keycode: Keycode) {
-        let players = self.ecs.read_storage::<components::Player>();
-        let mut positions = self.ecs.write_storage::<components::Position>();
+        let delta = match keycode {
+            Keycode::Left => (-1, 0),
+            Keycode::Right => (1, 0),
+            Keycode::Up => (0, -1),
+            Keycode::Down => (0, 1),
+            _ => return
+        };
 
-        for (_player, pos) in (&players, &mut positions).join() {
-            match keycode {
-                Keycode::Left => pos.x -= texture_info::TEXTURE_SIZE as i32,
-                Keycode::Right => pos.x += texture_info::TEXTURE_SIZE as i32,
-                Keycode::Up => pos.y -= texture_info::TEXTURE_SIZE as i32,
-                Keycode::Down => pos.y += texture_info::TEXTURE_SIZE as i32,
-                _ => {}
-            }
-        }
+        player::try_move_player(delta, self);
     }
 
     pub fn update(&mut self) -> Result<(), String> {

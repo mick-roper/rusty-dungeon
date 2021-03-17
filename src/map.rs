@@ -3,15 +3,15 @@ use rand::{thread_rng, Rng};
 use std::cmp::min;
 
 pub struct Map {
-    pub width: u32,
-    pub height: u32,
+    width: u32,
+    height: u32,
     pub rooms: Vec<Rect>,
     tiles: Vec<Tile>,
 }
 
 impl Map {
     pub fn new(width: u32, height: u32) -> Map {
-        let mut tiles = vec![Tile{tile_type: TileType::Void}; (width * height) as usize];
+        let mut tiles = vec![Tile{tile_type: TileType::Void, is_blocked: true}; (width * height) as usize];
         let rooms = generate_rooms(10, width, height);
 
         for room in rooms.iter() {
@@ -22,20 +22,24 @@ impl Map {
 
             for x in r_x..r_x2 {
                 for y in r_y..r_y2 {
-                    let idx = xy_idx(width, x as u32, y as u32);
+                    let idx = xy_idx(width, x, y);
 
                     if idx > tiles.len() {
                         panic!("{}*{}+{}={} is greater than {}", width, y, x, idx, tiles.len());
                     }
 
                     let new_tile_type: TileType;
+                    let is_blocked: bool;
                     if (x == r_x || x == r_x2-1 || y == r_y || y == r_y2-1) && tiles[idx].tile_type != TileType::Floor {
                         new_tile_type = TileType::Wall;
+                        is_blocked = true;
                     } else {
                         new_tile_type = TileType::Floor;
+                        is_blocked = false;
                     }
 
                     tiles[idx].tile_type = new_tile_type;
+                    tiles[idx].is_blocked = is_blocked;
                 }
             }
         }
@@ -43,7 +47,7 @@ impl Map {
         Map{width, height, tiles, rooms}
     }
 
-    pub fn tile_at(&self, x: u32, y: u32) -> &Tile {
+    pub fn tile_at(&self, x: i32, y: i32) -> &Tile {
         let idx = xy_idx(self.width, x, y);
         &self.tiles[idx]
     }
@@ -51,15 +55,24 @@ impl Map {
     pub fn first_room(&self) -> &Rect {
         &self.rooms[0]
     }
+
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn height(&self) -> u32 {
+        self.height
+    }
 }
 
-fn xy_idx(width: u32, x: u32, y: u32) -> usize {
-    (width * y + x) as usize
+fn xy_idx(width: u32, x: i32, y: i32) -> usize {
+    (width as i32 * y + x) as usize
 }
 
 #[derive(Copy, Clone)]
 pub struct Tile {
-    pub tile_type: TileType
+    pub tile_type: TileType,
+    pub is_blocked: bool,
 }
 
 #[derive(Copy, Clone, PartialEq)]
