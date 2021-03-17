@@ -62,7 +62,7 @@ fn main() -> Result<(), String> {
             }
         }
         
-        state.update()?;
+        state.update();
         draw(&mut state, &mut canvas, &tileset);
 
         ::std::thread::sleep(Duration::from_millis(FRAME_RATE));
@@ -78,7 +78,6 @@ fn draw(state: &mut State, canvas: &mut Canvas<sdl2::video::Window>, tileset: &T
 
     // 1: draw the map
     let map = state.ecs.fetch::<Map>();
-    
     let players = state.ecs.read_storage::<components::Player>();
     let positions = state.ecs.read_storage::<components::Position>();
     let mut centre_x: i32 = -1;
@@ -123,11 +122,15 @@ fn draw_map(map_centre_x: i32, map_centre_y: i32, map: &Map, canvas: &mut Canvas
 
     // todo: centre the map on the player
     let c_x = map_centre_x * ts_i32;
-    let c_y = map_centre_y * ts_i32;
-    let min_x = max(0, c_x - (canvas_x / 2) as i32) / ts_i32;
-    let min_y = max(0, c_y - (canvas_y / 2) as i32) / ts_i32;
-    let max_x = min(map.width() as i32, c_x + (canvas_x / 2) as i32) / ts_i32;
-    let max_y = min(map.height() as i32, c_y + (canvas_y / 2) as i32) / ts_i32;
+    let c_y = map_centre_y * (canvas_x / 2) as i32;
+    let half_x = (canvas_x / 2) as i32;
+    let half_y = (canvas_y / 2) as i32;
+    let min_x = max(0, (c_x - half_x) / ts_i32);
+    let min_y = max(0, (c_y - half_y) / ts_i32);
+    let max_x = min(map.width() as i32, c_x + half_x as i32) / ts_i32;
+    let max_y = min(map.height() as i32, c_y + half_y as i32) / ts_i32;
+
+    println!("{} {} {} {}", min_x, min_y, max_x, max_y);
 
     for x in 0..map.width() {
         let t_x = x * texture_info::TEXTURE_SIZE;

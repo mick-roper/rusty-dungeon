@@ -3,12 +3,13 @@ use sdl2::keyboard::Keycode;
 
 use super::*;
 
-pub struct State {
-    pub ecs: World
+pub struct State<'a, 'b> {
+    pub ecs: World,
+    dispatcher: specs::Dispatcher<'a, 'b>,
 }
 
-impl State {
-    pub fn new(width: u32, height: u32) -> State {
+impl State<'_, '_> {
+    pub fn new(width: u32, height: u32) -> State<'static, 'static> {
         let mut ecs = World::new();
         
         let map: map::Map;
@@ -44,7 +45,9 @@ impl State {
             })
             .build();
 
-        State{ecs}
+        let dispatcher: Dispatcher = DispatcherBuilder::new().build();
+
+        State{ecs, dispatcher}
     }
 
     pub fn handle_input(&mut self, keycode: Keycode) {
@@ -59,8 +62,8 @@ impl State {
         player::try_move_player(delta, self);
     }
 
-    pub fn update(&mut self) -> Result<(), String> {
-        // println!("updating the game state...");
-        Ok(())
+    pub fn update(&mut self) {
+        self.dispatcher.dispatch(&self.ecs);
+        self.ecs.maintain();
     }
 }
